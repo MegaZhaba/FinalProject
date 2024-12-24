@@ -1,0 +1,39 @@
+body {
+    background: url('sky_texture1998.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+  }
+  .weather-card {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      text-align: center;
+  }
+  .weather-card img {
+      width: 100px;
+      height: 100px;
+  }
+  .alert {
+      margin-top: 20px;
+      font-weight: bold;
+  }
+  #map {
+      height: 400px;
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  h1 {
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  }
+  button {
+      font-weight: bold;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      border: none;
+  }
+  button:hover {
+      background: linear-gradient(to right, #0072ff, #00c6ff);
+  }
