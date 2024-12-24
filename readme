@@ -1,0 +1,163 @@
+
+### Документация: Weather Panel
+
+#### Описание проекта
+Weather Panel — это веб-приложение для отображения информации о погоде. Пользователь вводит название города, и приложение возвращает текущую температуру, описание погоды, скорость ветра, а также показывает положение города на карте с использованием библиотеки **Leaflet.js**.
+
+---
+
+#### Используемые технологии
+- HTML5: структура страницы.  
+-*CSS: стилизация интерфейса.  
+- Bootstrap 5: адаптивный дизайн.  
+- JavaScript: реализация логики взаимодействия с API и обработки данных.  
+- Leaflet.js: библиотека для отображения интерактивной карты.  
+- OpenWeatherMap API: источник данных о погоде.
+
+---
+
+#### Описание структуры файлов
+1. index.html 
+   - Главный файл, который содержит структуру веб-страницы.  
+   - Включает ссылки на стили и скрипты, а также элементы интерфейса (поле ввода, кнопку, карточку погоды).
+
+2. styles.css  
+   - Кастомные стили для элементов страницы.
+
+3. script.js 
+   - Основной файл логики, отвечающий за:
+     - Обработку пользовательского ввода.
+     - Отправку запросов к API.
+     - Отображение данных на странице.
+     - Интеграцию карты.
+
+---
+
+#### Разбор HTML-кода (index.html)
+
+Ключевые элементы:
+- Поле ввода:  
+  ```html
+  <input type="text" id="cityInput" class="form-control" placeholder="Enter city name">
+  ```
+  Используется для ввода названия города.
+
+- Кнопка запуска:  
+  ```html
+  <button class="btn btn-primary w-100 mt-2" onclick="getWeather()">Get Weather</button>
+  ```
+  По нажатию запускает функцию `getWeather()`.
+
+- Карточка для отображения погоды:  
+  ```html
+  <div id="weatherCard" class="weather-card mt-4" style="display: none;">
+      <h3 id="cityName"></h3>
+      <img id="weatherIcon" src="" alt="Weather Icon">
+      <p><strong>Temperature:</strong> <span id="temperature"></span> °C</p>
+      <p><strong>Weather:</strong> <span id="weatherDescription"></span></p>
+      <p><strong>Wind Speed:</strong> <span id="windSpeed"></span> m/s</p>
+  </div>
+  ```
+  Динамически обновляется данными из API.
+
+- Карты:  
+  ```html
+  <div id="map" style="display: none;"></div>
+  ```
+  Используется для рендеринга интерактивной карты.
+
+---
+
+#### Разбор JavaScript-кода (script.js)
+
+**Инициализация и основные функции:**
+
+1. Получение данных о погоде:
+   ```javascript
+   async function getWeather() {
+       const city = document.getElementById('cityInput').value;
+       const apiKey = 'YOUR_API_KEY';
+       const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+       try {
+           const response = await fetch(url);
+           if (!response.ok) throw new Error('City not found');
+
+           const data = await response.json();
+           displayWeather(data);
+       } catch (error) {
+           showAlert(error.message);
+       }
+   }
+   ```
+   - Получает город из ввода пользователя.
+   - Отправляет запрос к OpenWeatherMap API.
+   - Обрабатывает возможные ошибки (например, неправильный город).
+
+2. Отображение данных о погоде:
+   ```javascript
+   function displayWeather(data) {
+       document.getElementById('weatherCard').style.display = 'block';
+       document.getElementById('cityName').textContent = data.name;
+       document.getElementById('weatherIcon').src = `http://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
+       document.getElementById('temperature').textContent = data.main.temp;
+       document.getElementById('weatherDescription').textContent = data.weather[0].description;
+       document.getElementById('windSpeed').textContent = data.wind.speed;
+
+       showMap(data.coord.lat, data.coord.lon);
+   }
+   ```
+   - Обновляет элементы карточки с данными о погоде.
+   - Запускает функцию отображения карты с координатами города.
+
+3. Отображение карты с помощью Leaflet.js:
+   ```javascript
+   function showMap(lat, lon) {
+       const map = L.map('map').setView([lat, lon], 10);
+       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+           attribution: '&copy; OpenStreetMap contributors'
+       }).addTo(map);
+
+       L.marker([lat, lon]).addTo(map)
+           .bindPopup('You are here!')
+           .openPopup();
+
+       document.getElementById('map').style.display = 'block';
+   }
+   ```
+   - Инициализирует карту с координатами города.
+   - Добавляет маркер и всплывающее сообщение.
+
+4. Сообщения об ошибках:
+   ```javascript
+   function showAlert(message) {
+       const alertBox = document.getElementById('alert');
+       alertBox.textContent = message;
+       alertBox.style.display = 'block';
+
+       setTimeout(() => {
+           alertBox.style.display = 'none';
+       }, 3000);
+   }
+   ```
+   - Показывает сообщение, если город не найден или произошла другая ошибка.
+
+---
+
+
+#### **Пример запроса к API**
+Запрос для получения данных о погоде:
+```plaintext
+https://api.openweathermap.org/data/2.5/weather?q=London&appid=YOUR_API_KEY&units=metric
+```
+Ответ:
+```json
+{
+   "coord": {"lon": -0.1257, "lat": 51.5085},
+   "weather": [{"description": "clear sky", "icon": "01d"}],
+   "main": {"temp": 18.32},
+   "wind": {"speed": 3.09},
+   "name": "London"
+}
+```
+
